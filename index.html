@@ -1,1334 +1,1999 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Catch the Stars — Cosmic Arcade</title>
+<title>Catch The Stars — Cosmic Arcade</title>
 
 <style>
 *{box-sizing:border-box}
 
 :root{
- --cyan:#5ee7ff;
- --pink:#ff62d8;
- --gold:#ffd95a;
- --panel:rgba(8,12,35,.75)
+  --cyan:#5ee7ff;
+  --pink:#ff62d8;
+  --gold:#ffd95a;
+  --green:#65ffb0;
+  --panel:rgba(8,12,35,.78);
 }
 
-body{
- margin:0;
- min-height:100vh;
- background:#030516;
- color:#fff;
- font-family:Inter,system-ui,Arial,sans-serif;
- overflow:hidden
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at 20% 20%,#24135f 0,transparent 35%),
+    radial-gradient(circle at 80% 80%,#43134f 0,transparent 35%),
+    #050816;
+  color:white;
 }
-
-body:before{
- content:"";
- position:fixed;
- inset:0;
- background:
- radial-gradient(circle at 20% 20%,#273b88 0 1px,transparent 2px),
- radial-gradient(circle at 70% 30%,#fff 0 1px,transparent 2px),
- radial-gradient(circle at 40% 75%,#6ee7ff 0 1px,transparent 2px),
- radial-gradient(circle at 90% 80%,#fff 0 1px,transparent 2px);
- background-size:130px 110px,180px 150px,210px 170px,160px 130px;
- opacity:.6;
- z-index:-2
-}
-
-body:after{
- content:"";
- position:fixed;
- inset:-30%;
- background:
- radial-gradient(circle,#3824a8 0,transparent 35%),
- radial-gradient(circle at 80% 60%,#0b7890 0,transparent 30%);
- filter:blur(80px);
- opacity:.35;
- z-index:-3
-}
-
-.app{
- height:100vh;
- display:flex;
- flex-direction:column;
- max-width:1200px;
- margin:auto;
- padding:14px
-}
-
-.top{
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:10px;
- flex-wrap:wrap
-}
-
-.logo{
- font-size:clamp(22px,4vw,36px);
- font-weight:900;
- letter-spacing:.5px;
- text-shadow:0 0 18px #5ee7ff
-}
-
-.logo span{color:var(--pink)}
-
-.stats{
- display:flex;
- gap:8px;
- flex-wrap:wrap;
- justify-content:center
-}
-
-.card{
- min-width:82px;
- padding:8px 12px;
- border:1px solid #ffffff1c;
- background:var(--panel);
- border-radius:15px;
- backdrop-filter:blur(12px);
- box-shadow:0 8px 30px #0005
-}
-
-.card small{
- display:block;
- color:#8fa2c9;
- font-size:10px;
- text-transform:uppercase;
- letter-spacing:1.5px
-}
-
-.card b{font-size:20px}
 
 button{
- border:1px solid #ffffff2b;
- background:linear-gradient(135deg,#16285d,#35165d);
- color:#fff;
- border-radius:13px;
- padding:10px 14px;
- font-weight:800;
- cursor:pointer;
- box-shadow:0 5px 18px #0006;
- transition:.2s
-}
-
-button:hover{
- transform:translateY(-2px);
- filter:brightness(1.2)
+  border:0;
+  cursor:pointer;
+  font-weight:800;
 }
 
 #game{
- position:relative;
- flex:1;
- margin-top:12px;
- border:1px solid #ffffff18;
- border-radius:24px;
- overflow:hidden;
- background:linear-gradient(180deg,#070b29aa,#020414cc);
- box-shadow:inset 0 0 80px #0008,0 15px 50px #0007
+  position:relative;
+  width:100%;
+  height:100vh;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(35,60,120,.15),transparent 55%);
 }
 
-#game:before{
- content:"";
- position:absolute;
- inset:0;
- background:linear-gradient(transparent 96%,#5ee7ff12 100%);
- background-size:100% 42px;
- pointer-events:none
+.star-bg{
+  position:absolute;
+  width:2px;
+  height:2px;
+  background:white;
+  border-radius:50%;
+  opacity:.7;
+  box-shadow:
+    120px 80px white,
+    250px 160px #fff,
+    380px 70px white,
+    510px 210px #9eeaff,
+    680px 110px white,
+    800px 260px #fff,
+    930px 90px white,
+    1100px 190px #9eeaff,
+    1250px 80px white,
+    1400px 260px white,
+    160px 400px #fff,
+    300px 520px white,
+    470px 430px #9eeaff,
+    700px 570px white,
+    920px 470px white,
+    1150px 560px #fff,
+    1350px 430px white;
+  animation:twinkle 3s infinite alternate;
+}
+
+@keyframes twinkle{
+  from{opacity:.25}
+  to{opacity:.9}
+}
+
+#hud{
+  position:absolute;
+  top:14px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(950px,94%);
+  z-index:20;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.stat{
+  background:rgba(9,15,40,.78);
+  border:1px solid rgba(94,231,255,.28);
+  box-shadow:0 0 18px rgba(94,231,255,.08);
+  border-radius:14px;
+  padding:8px 12px;
+  min-width:80px;
+  text-align:center;
+  backdrop-filter:blur(8px);
+}
+
+.stat small{
+  display:block;
+  color:#91a7c7;
+  font-size:10px;
+  text-transform:uppercase;
+}
+
+.stat b{
+  display:block;
+  font-size:18px;
+  margin-top:2px;
+}
+
+#lives{
+  color:#ff779d;
+  letter-spacing:2px;
+}
+
+#topButtons{
+  position:absolute;
+  top:78px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(950px,94%);
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  z-index:25;
+  flex-wrap:wrap;
+}
+
+.topBtn{
+  background:rgba(14,20,52,.85);
+  color:white;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:12px;
+  padding:9px 13px;
+  transition:.2s;
+}
+
+.topBtn:hover{
+  transform:translateY(-2px);
+  border-color:var(--cyan);
+  box-shadow:0 0 16px rgba(94,231,255,.25);
 }
 
 #player{
- position:absolute;
- bottom:22px;
- left:50%;
- transform:translateX(-50%);
- width:80px;
- height:42px;
- border-radius:45% 45% 35% 35%;
- background:linear-gradient(#fff,#63dfff 38%,#5b5cff);
- box-shadow:0 0 20px #5ee7ff,0 0 50px #4c55ff;
- display:grid;
- place-items:center;
- font-size:25px;
- user-select:none;
- z-index:2
-}
-
-#player:after{
- content:"";
- position:absolute;
- bottom:-17px;
- width:35px;
- height:28px;
- background:linear-gradient(#ffec6a,transparent);
- clip-path:polygon(30% 0,70% 0,100% 100%,50% 70%,0 100%);
- filter:blur(1px)
+  position:absolute;
+  left:50%;
+  bottom:35px;
+  transform:translateX(-50%);
+  width:68px;
+  height:68px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:52px;
+  z-index:10;
+  filter:drop-shadow(0 0 16px rgba(94,231,255,.8));
+  user-select:none;
+  transition:left .06s linear;
 }
 
 .item{
- position:absolute;
- display:grid;
- place-items:center;
- cursor:pointer;
- user-select:none;
- animation:spin 2.2s linear infinite;
- filter:drop-shadow(0 0 10px currentColor);
- z-index:3
+  position:absolute;
+  top:-80px;
+  width:48px;
+  height:48px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:34px;
+  z-index:8;
+  user-select:none;
+  pointer-events:none;
 }
 
 .star{
- font-size:40px;
- color:#ffe66d
+  filter:drop-shadow(0 0 12px #ffe96b);
 }
 
 .diamond{
- font-size:37px;
- color:#62efff
+  filter:drop-shadow(0 0 14px #69eaff);
 }
 
-@keyframes spin{
- 50%{transform:rotate(12deg) scale(1.08)}
+.starHit{
+  animation:starCatch .42s ease-out forwards;
 }
 
-.float{
- position:absolute;
- font-weight:1000;
- font-size:20px;
- pointer-events:none;
- animation:float .8s ease-out forwards;
- text-shadow:0 0 12px currentColor;
- z-index:10
+.diamondHit{
+  animation:diamondCatch .42s ease-out forwards;
 }
 
-@keyframes float{
- to{
-  transform:translateY(-55px);
-  opacity:0
- }
+@keyframes starCatch{
+  0%{transform:scale(1) rotate(0)}
+  40%{transform:scale(1.7) rotate(100deg)}
+  100%{transform:scale(0) rotate(220deg);opacity:0}
 }
 
-.combo{
- position:absolute;
- left:50%;
- top:45%;
- transform:translate(-50%,-50%);
- font-size:clamp(26px,6vw,58px);
- font-weight:1000;
- color:#fff;
- text-shadow:0 0 20px #ff62d8;
- pointer-events:none;
- opacity:0;
- z-index:8
+@keyframes diamondCatch{
+  0%{transform:scale(1) rotate(0)}
+  40%{transform:scale(1.8) rotate(120deg)}
+  100%{transform:scale(0) rotate(260deg);opacity:0}
 }
 
-.combo.show{animation:pop .7s ease-out}
-
-@keyframes pop{
- 0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}
- 35%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}
- 100%{opacity:0;transform:translate(-50%,-75%) scale(1)}
+.hitRing{
+  position:absolute;
+  width:20px;
+  height:20px;
+  border:3px solid white;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9;
+  animation:ring .45s ease-out forwards;
 }
 
-.progressWrap{
- position:absolute;
- left:18px;
- right:18px;
- top:14px;
- height:9px;
- background:#ffffff12;
- border-radius:99px;
- overflow:hidden;
- border:1px solid #ffffff10;
- z-index:4
+@keyframes ring{
+  from{
+    transform:translate(-50%,-50%) scale(.2);
+    opacity:1;
+  }
+  to{
+    transform:translate(-50%,-50%) scale(4);
+    opacity:0;
+  }
 }
 
-#progress{
- height:100%;
- width:0;
- background:linear-gradient(90deg,#5ee7ff,#b56cff,#ff62d8);
- box-shadow:0 0 15px #5ee7ff;
- transition:.25s
+.hitSpark{
+  position:absolute;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:white;
+  pointer-events:none;
+  z-index:9;
+  animation:spark .5s ease-out forwards;
+}
+
+@keyframes spark{
+  from{
+    transform:translate(-50%,-50%);
+    opacity:1;
+  }
+  to{
+    transform:translate(
+      calc(-50% + var(--x)),
+      calc(-50% + var(--y))
+    );
+    opacity:0;
+  }
+}
+
+.floatText{
+  position:absolute;
+  z-index:30;
+  font-size:20px;
+  font-weight:900;
+  pointer-events:none;
+  animation:floatUp .8s ease-out forwards;
+  text-shadow:0 0 10px currentColor;
+}
+
+@keyframes floatUp{
+  0%{
+    transform:translate(-50%,0) scale(.8);
+    opacity:0;
+  }
+  20%{opacity:1}
+  100%{
+    transform:translate(-50%,-70px) scale(1.1);
+    opacity:0;
+  }
+}
+
+.gemPopup{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  color:#67eaff;
+  font-size:30px;
+  font-weight:900;
+  z-index:50;
+  animation:gemPop 1s ease-out forwards;
+  pointer-events:none;
+}
+
+@keyframes gemPop{
+  0%{transform:translate(-50%,-50%) scale(.5);opacity:0}
+  20%{opacity:1}
+  100%{transform:translate(-50%,-130%) scale(1.2);opacity:0}
 }
 
 .overlay{
- position:absolute;
- inset:0;
- display:grid;
- place-items:center;
- background:#02051dcc;
- backdrop-filter:blur(8px);
- z-index:20
+  position:absolute;
+  inset:0;
+  z-index:100;
+  background:rgba(2,4,15,.76);
+  backdrop-filter:blur(8px);
+  display:grid;
+  place-items:center;
+  padding:20px;
 }
 
-.modal{
- width:min(480px,92%);
- text-align:center;
- padding:30px;
- border:1px solid #ffffff25;
- border-radius:26px;
- background:linear-gradient(145deg,#11183efF,#190c32eF);
- box-shadow:0 25px 80px #0009
+.card{
+  width:min(520px,94%);
+  max-height:90vh;
+  overflow:auto;
+  background:var(--panel);
+  border:1px solid rgba(94,231,255,.35);
+  border-radius:24px;
+  padding:28px;
+  text-align:center;
+  box-shadow:
+    0 0 60px rgba(94,231,255,.12),
+    inset 0 0 30px rgba(255,255,255,.02);
 }
 
-.modal h1{
- margin:0 0 8px;
- font-size:clamp(30px,7vw,54px);
- text-shadow:0 0 25px #5ee7ff
+.title{
+  font-size:42px;
+  margin:0 0 8px;
+  background:linear-gradient(90deg,var(--cyan),var(--pink),var(--gold));
+  -webkit-background-clip:text;
+  color:transparent;
 }
 
-.modal p{
- color:#b9c6e5;
- line-height:1.6
+.subtitle{
+  color:#a9b8d4;
+  margin-bottom:24px;
 }
 
-.big{font-size:64px}
-
-#playerName{
- width:100%;
- max-width:300px;
- padding:14px 16px;
- margin:10px auto 14px;
- display:block;
- border-radius:14px;
- border:1px solid #ffffff25;
- background:#ffffff0d;
- color:#fff;
- outline:none;
- text-align:center;
- font-size:17px;
- font-weight:700
+input{
+  width:100%;
+  padding:13px 15px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.15);
+  outline:none;
+  background:#0c1230;
+  color:white;
+  font-size:16px;
+  margin-bottom:15px;
 }
 
-#playerName::placeholder{
- color:#7180a5
-}
-
-#playerName:focus{
- border-color:#5ee7ff;
- box-shadow:0 0 18px #5ee7ff33
-}
-
-.genderTitle{
- color:#8fa2c9;
- font-size:12px;
- text-transform:uppercase;
- letter-spacing:1px;
- margin-bottom:8px
+.genderBox{
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
 }
 
 .gender{
- display:flex;
- justify-content:center;
- gap:10px;
- margin-bottom:15px
+  flex:1;
+  padding:14px;
+  border-radius:13px;
+  background:#10183d;
+  color:white;
+  border:1px solid rgba(255,255,255,.12);
+  font-size:17px;
 }
 
-.gender button{
- min-width:110px;
- font-size:15px
+.gender.active{
+  border-color:var(--cyan);
+  box-shadow:0 0 18px rgba(94,231,255,.25);
+  background:#152553;
 }
 
-.gender button.selected{
- border-color:#5ee7ff;
- background:linear-gradient(135deg,#164c6b,#5a196d);
- box-shadow:0 0 18px #5ee7ff55
+.mainBtn{
+  width:100%;
+  padding:14px;
+  margin-top:8px;
+  border-radius:13px;
+  background:linear-gradient(90deg,#31d9ff,#a86cff);
+  color:white;
+  font-size:17px;
+  box-shadow:0 0 22px rgba(94,231,255,.2);
+}
+
+.secondaryBtn{
+  width:100%;
+  padding:12px;
+  margin-top:9px;
+  border-radius:12px;
+  background:#111a40;
+  color:white;
+  border:1px solid rgba(255,255,255,.13);
+}
+
+.secondaryBtn:hover,
+.mainBtn:hover{
+  transform:translateY(-1px);
+}
+
+.profilePreview{
+  font-size:58px;
+  margin-bottom:5px;
+}
+
+.info{
+  color:#92a3c4;
+  font-size:13px;
+  line-height:1.5;
+}
+
+#pauseScreen,
+#gameOver,
+#leaderboard,
+#settingsScreen{
+  display:none;
 }
 
 #leaderboardList{
- margin:18px 0;
- display:flex;
- flex-direction:column;
- gap:8px;
- max-height:300px;
- overflow-y:auto
+  margin:15px 0;
 }
 
-.lb-row{
- display:grid;
- grid-template-columns:42px 1fr 75px 60px;
- align-items:center;
- gap:5px;
- padding:12px 10px;
- border-radius:14px;
- background:#ffffff0d;
- border:1px solid #ffffff15;
- font-weight:800
+.leaderRow{
+  display:grid;
+  grid-template-columns:45px 1fr 80px;
+  gap:8px;
+  align-items:center;
+  padding:10px;
+  margin:7px 0;
+  border-radius:11px;
+  background:rgba(255,255,255,.05);
 }
 
-.lb-row:nth-child(1){
- background:#ffd95a22;
- border-color:#ffd95a66;
- box-shadow:0 0 18px #ffd95a22
+.leaderRow:first-child{
+  border:1px solid rgba(255,217,90,.4);
 }
 
-.lb-row:nth-child(2){background:#c8d0df18}
-.lb-row:nth-child(3){background:#cd7f3218}
-
-.lb-empty{
- color:#8fa2c9;
- padding:20px
+.rank{
+  font-weight:900;
+  color:var(--gold);
 }
 
-.lb-title{
- color:#8fa2c9;
- font-size:11px;
- text-transform:uppercase
+.nameCell{
+  text-align:left;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.scoreCell{
+  text-align:right;
+  color:var(--cyan);
+  font-weight:900;
+}
+
+.settingRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:14px 4px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.settingRow button{
+  padding:9px 15px;
+  border-radius:10px;
+  background:#17204a;
+  color:white;
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.inviteBox{
+  margin-top:15px;
+  padding:15px;
+  border-radius:14px;
+  background:rgba(94,231,255,.06);
+  border:1px solid rgba(94,231,255,.16);
+}
+
+.inviteReward{
+  color:var(--gold);
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:5px;
 }
 
 #toast{
- position:fixed;
- top:85px;
- left:50%;
- transform:translateX(-50%);
- padding:12px 20px;
- border-radius:99px;
- background:#121a3bea;
- border:1px solid #ffffff25;
- opacity:0;
- transition:.25s;
- z-index:50;
- font-weight:900
+  position:absolute;
+  left:50%;
+  top:125px;
+  transform:translateX(-50%);
+  z-index:200;
+  padding:11px 17px;
+  border-radius:12px;
+  background:rgba(8,12,35,.94);
+  border:1px solid rgba(94,231,255,.3);
+  box-shadow:0 0 25px rgba(94,231,255,.12);
+  display:none;
+  font-weight:800;
 }
 
-#toast.on{opacity:1}
+@media(max-width:600px){
+  .stat{
+    min-width:66px;
+    padding:7px 8px;
+  }
 
-.hint{
- text-align:center;
- color:#7180a5;
- font-size:12px;
- padding:7px
-}
+  .stat b{
+    font-size:15px;
+  }
 
-@media(max-width:650px){
- .app{padding:8px}
- .card{min-width:68px;padding:6px 8px}
- .card b{font-size:16px}
- button{padding:8px 10px}
- .hint{display:none}
+  #topButtons{
+    top:75px;
+  }
 
- .lb-row{
-  grid-template-columns:35px 1fr 60px 50px;
-  font-size:13px
- }
+  .topBtn{
+    padding:8px 9px;
+    font-size:12px;
+  }
+
+  .title{
+    font-size:31px;
+  }
+
+  .card{
+    padding:20px;
+  }
+
+  #player{
+    bottom:25px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
-
-<div class="top">
-
-<div class="logo">
-CATCH <span>THE STARS</span> ✦
-</div>
-
-<div class="stats">
-
-<div class="card">
-<small>Score</small>
-<b id="score">0</b>
-</div>
-
-<div class="card">
-<small>Level</small>
-<b id="level">1</b>
-</div>
-
-<div class="card">
-<small>Lives</small>
-<b id="lives">❤️❤️❤️❤️❤️</b>
-</div>
-
-<div class="card">
-<small>Time</small>
-<b id="time">60</b>
-</div>
-
-<div class="card">
-<small>Gems</small>
-<b id="gems">0</b>
-</div>
-
-<button id="sound">🔊</button>
-<button id="restart">↻</button>
-<button id="leaderboardBtn">🏆</button>
-
-</div>
-</div>
-
 <div id="game">
 
-<div class="progressWrap">
-<div id="progress"></div>
-</div>
+  <div class="star-bg"></div>
 
-<div id="player">🚀</div>
+  <!-- HUD -->
+  <div id="hud">
 
-<div id="combo"></div>
+    <div class="stat">
+      <small>Score</small>
+      <b id="score">0</b>
+    </div>
 
-<!-- START SCREEN -->
+    <div class="stat">
+      <small>Level</small>
+      <b id="level">1</b>
+    </div>
 
-<div class="overlay" id="start">
+    <div class="stat">
+      <small>Time</small>
+      <b id="time">60</b>
+    </div>
 
-<div class="modal">
+    <div class="stat">
+      <small>Lives</small>
+      <b id="lives">❤️❤️❤️❤️❤️</b>
+    </div>
 
-<div class="big">🌌</div>
+    <div class="stat">
+      <small>Gems</small>
+      <b id="gems">💎 0</b>
+    </div>
 
-<h1>Cosmic Catch</h1>
+    <div class="stat">
+      <small>Combo</small>
+      <b id="combo">x0</b>
+    </div>
 
-<p>
-Enter your name and choose your character!
-</p>
+  </div>
 
-<input
- id="playerName"
- type="text"
- maxlength="15"
- placeholder="✏️ Enter your name..."
- autocomplete="off">
+  <!-- TOP BUTTONS -->
+  <div id="topButtons">
 
-<div class="genderTitle">
-Choose your character
-</div>
+    <button class="topBtn" id="soundBtn">🔊 Sound</button>
 
-<div class="gender">
+    <button class="topBtn" id="pauseBtn">⏸️ Pause</button>
 
-<button id="maleBtn" class="selected">
-👦 Male
-</button>
+    <button class="topBtn" id="leaderBtn">🏆 Leaderboard</button>
 
-<button id="femaleBtn">
-👧 Female
-</button>
+    <button class="topBtn" id="settingsBtn">⚙️ Settings</button>
 
-</div>
+    <button class="topBtn" id="inviteBtn">👥 Invite +5💎</button>
 
-<button id="play">
-🚀 START GAME
-</button>
+    <button class="topBtn" id="restartBtn">🔄 Restart</button>
 
-<br><br>
+  </div>
 
-<button id="startLeaderboard">
-🏆 LEADERBOARD
-</button>
+  <!-- PLAYER -->
+  <div id="player">🚀</div>
 
-</div>
-</div>
+  <div id="toast"></div>
 
-</div>
+  <!-- START SCREEN -->
+  <div class="overlay" id="startScreen">
 
-<div class="hint">
-⭐ Star +1
-&nbsp; • &nbsp;
-💎 Diamond +5 gems
-&nbsp; • &nbsp;
-10 stars = Level Up
-&nbsp; • &nbsp;
-5 missed stars = −1 ❤️
-&nbsp; • &nbsp;
-🎵 Music
-</div>
+    <div class="card">
 
-</div>
+      <div class="profilePreview" id="avatarPreview">👦</div>
 
-<div id="toast"></div>
+      <h1 class="title">Catch The Stars</h1>
 
-<!-- LEADERBOARD -->
+      <div class="subtitle">
+        Cosmic Arcade 🚀✨
+      </div>
 
-<div class="overlay" id="leaderboard" style="display:none">
+      <input
+        id="nameInput"
+        maxlength="18"
+        placeholder="Enter your player name"
+      >
 
-<div class="modal">
+      <div class="genderBox">
 
-<div class="big">🏆</div>
+        <button class="gender active" id="maleBtn">
+          👦 Male
+        </button>
 
-<h1>Leaderboard</h1>
+        <button class="gender" id="femaleBtn">
+          👧 Female
+        </button>
 
-<div class="lb-title">
-Top 10 Cosmic Players
-</div>
+      </div>
 
-<div id="leaderboardList"></div>
+      <button class="mainBtn" id="startBtn">
+        🚀 Start Game
+      </button>
 
-<button id="closeLeaderboard">
-✕ CLOSE
-</button>
+      <button class="secondaryBtn" id="startLeaderboardBtn">
+        🏆 Leaderboard
+      </button>
 
-</div>
-
-</div>
-
-
-<script>
-
-const game=document.getElementById('game');
-const player=document.getElementById('player');
-
-const scoreEl=document.getElementById('score');
-const levelEl=document.getElementById('level');
-const livesEl=document.getElementById('lives');
-const timeEl=document.getElementById('time');
-const gemsEl=document.getElementById('gems');
-
-const progress=document.getElementById('progress');
-const overlay=document.getElementById('start');
-const combo=document.getElementById('combo');
-const toast=document.getElementById('toast');
-
-const leaderboard=document.getElementById('leaderboard');
-const leaderboardList=document.getElementById('leaderboardList');
-
-const nameInput=document.getElementById('playerName');
-const maleBtn=document.getElementById('maleBtn');
-const femaleBtn=document.getElementById('femaleBtn');
-
-let score=0;
-let level=1;
-let lives=5;
-let time=60;
-let gems=0;
-let starsInLevel=0;
-let running=false;
-let timer=null;
-let spawner=null;
-let soundOn=true;
-let comboCount=0;
-let missedStars=0;
-let musicPlaying=false;
-
-let playerName='';
-let playerGender='male';
-let playerAvatar='👦';
-
-let audio;
-
-
-/* GENDER */
-
-maleBtn.onclick=()=>{
-
- playerGender='male';
- playerAvatar='👦';
-
- maleBtn.classList.add('selected');
- femaleBtn.classList.remove('selected');
-
-};
-
-femaleBtn.onclick=()=>{
-
- playerGender='female';
- playerAvatar='👧';
-
- femaleBtn.classList.add('selected');
- maleBtn.classList.remove('selected');
-
-};
-
-
-/* SOUND */
-
-function beep(freq,duration=.08,type='sine'){
-
- if(!soundOn)return;
-
- try{
-
-  audio??=new AudioContext();
-
-  let o=audio.createOscillator();
-  let g=audio.createGain();
-
-  o.frequency.value=freq;
-  o.type=type;
-
-  g.gain.value=.035;
-
-  o.connect(g);
-  g.connect(audio.destination);
-
-  o.start();
-
-  g.gain.exponentialRampToValueAtTime(
-   .001,
-   audio.currentTime+duration
-  );
-
-  o.stop(audio.currentTime+duration);
-
- }catch(e){}
-
-}
-
-
-/* MUSIC */
-
-function startMusic(){
-
- if(!soundOn || musicPlaying)return;
-
- try{
-
-  audio??=new AudioContext();
-
-  musicPlaying=true;
-
-  const notes=[
-   261.63,329.63,392,523.25,
-   392,329.63,293.66,392
-  ];
-
-  let i=0;
-
-  const playNote=()=>{
-
-   if(!running || !soundOn){
-
-    musicPlaying=false;
-    return;
-
-   }
-
-   const o=audio.createOscillator();
-   const g=audio.createGain();
-
-   o.type='triangle';
-
-   o.frequency.value=
-    notes[i++%notes.length];
-
-   g.gain.value=.012;
-
-   o.connect(g);
-   g.connect(audio.destination);
-
-   o.start();
-
-   g.gain.exponentialRampToValueAtTime(
-    .001,
-    audio.currentTime+.28
-   );
-
-   o.stop(audio.currentTime+.28);
-
-   setTimeout(playNote,360);
-
-  };
-
-  playNote();
-
- }catch(e){}
-
-}
-
-
-/* UPDATE */
-
-function update(){
-
- scoreEl.textContent=score;
- levelEl.textContent=level;
-
- livesEl.textContent=
-  '❤️'.repeat(lives)+
-  '🖤'.repeat(5-lives);
-
- timeEl.textContent=time;
- gemsEl.textContent=gems;
-
- progress.style.width=
-  (starsInLevel/10*100)+'%';
-
-}
-
-
-/* TOAST */
-
-function say(t){
-
- toast.textContent=t;
-
- toast.classList.add('on');
-
- setTimeout(
-  ()=>toast.classList.remove('on'),
-  1200
- );
-
-}
-
-
-/* FLOAT */
-
-function floatText(x,y,text,color){
-
- let d=document.createElement('div');
-
- d.className='float';
-
- d.textContent=text;
-
- d.style.left=x+'px';
- d.style.top=y+'px';
- d.style.color=color;
-
- game.appendChild(d);
-
- setTimeout(
-  ()=>d.remove(),
-  800
- );
-
-}
-
-
-/* SAVE SCORE */
-
-function saveScore(){
-
- let board=
-  JSON.parse(
-   localStorage.getItem('cosmicLeaderboard') || '[]'
-  );
-
- board.push({
-
-  name:playerName,
-  avatar:playerAvatar,
-  score:score,
-  level:level,
-  gems:gems
-
- });
-
- board.sort(
-  (a,b)=>b.score-a.score
- );
-
- board=board.slice(0,10);
-
- localStorage.setItem(
-  'cosmicLeaderboard',
-  JSON.stringify(board)
- );
-
-}
-
-
-/* LEADERBOARD */
-
-function showLeaderboard(){
-
- let board=
-  JSON.parse(
-   localStorage.getItem('cosmicLeaderboard') || '[]'
-  );
-
- if(!board.length){
-
-  leaderboardList.innerHTML=
-   '<div class="lb-empty">No scores yet — play the game! 🚀</div>';
-
- }else{
-
-  leaderboardList.innerHTML=
-
-   board.map((x,i)=>`
-
-    <div class="lb-row">
-
-     <span>
-      ${
-       i===0?'🥇':
-       i===1?'🥈':
-       i===2?'🥉':
-       (i+1)+'.'
-      }
-     </span>
-
-     <span>
-      ${x.avatar} ${x.name}
-     </span>
-
-     <span>
-      ${x.score} ⭐
-     </span>
-
-     <span>
-      Lv.${x.level}
-     </span>
+      <div class="inviteBox">
+        <div class="inviteReward">👥 Invite Friends = +5 💎</div>
+        <div class="info">
+          Share your invite link with friends and claim your
+          invite reward.
+        </div>
+      </div>
 
     </div>
 
-   `).join('');
+  </div>
 
- }
+  <!-- PAUSE -->
+  <div class="overlay" id="pauseScreen">
 
- leaderboard.style.display='grid';
+    <div class="card">
+
+      <h1 class="title">Paused ⏸️</h1>
+
+      <p class="subtitle">
+        Your cosmic journey is paused.
+      </p>
+
+      <button class="mainBtn" id="resumeBtn">
+        ▶️ Resume
+      </button>
+
+      <button class="secondaryBtn" id="pauseSettingsBtn">
+        ⚙️ Settings
+      </button>
+
+      <button class="secondaryBtn" id="pauseLeaderboardBtn">
+        🏆 Leaderboard
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- GAME OVER -->
+  <div class="overlay" id="gameOver">
+
+    <div class="card">
+
+      <div class="profilePreview" id="gameOverAvatar">👦</div>
+
+      <h1 class="title">Game Over</h1>
+
+      <p class="subtitle" id="gameOverReason">
+        Time's up!
+      </p>
+
+      <div class="stat" style="margin:auto">
+        <small>Final Score</small>
+        <b id="finalScore">0</b>
+      </div>
+
+      <br>
+
+      <div class="stat" style="margin:auto">
+        <small>Diamonds</small>
+        <b id="finalGems">💎 0</b>
+      </div>
+
+      <button class="mainBtn" id="playAgainBtn">
+        🚀 Play Again
+      </button>
+
+      <button class="secondaryBtn" id="gameOverLeaderboardBtn">
+        🏆 Leaderboard
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="overlay" id="leaderboard">
+
+    <div class="card">
+
+      <h1 class="title">Leaderboard 🏆</h1>
+
+      <p class="subtitle">
+        Top 10 players on this browser
+      </p>
+
+      <div id="leaderboardList"></div>
+
+      <button class="mainBtn" id="closeLeaderboard">
+        ← Back
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="overlay" id="settingsScreen">
+
+    <div class="card">
+
+      <h1 class="title">Settings ⚙️</h1>
+
+      <div class="settingRow">
+        <span>🔊 Sound</span>
+        <button id="settingSoundBtn">
+          ON
+        </button>
+      </div>
+
+      <div class="settingRow">
+        <span>⏸️ Pause Game</span>
+        <button id="settingPauseBtn">
+          Pause
+        </button>
+      </div>
+
+      <div class="settingRow">
+        <span>🏆 Leaderboard</span>
+        <button id="settingLeaderboardBtn">
+          Open
+        </button>
+      </div>
+
+      <div class="settingRow">
+        <span>👥 Invite Friends</span>
+        <button id="settingInviteBtn">
+          +5 💎
+        </button>
+      </div>
+
+      <button class="mainBtn" id="closeSettings">
+        ← Back
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+/* =========================
+   GAME STATE
+========================= */
+
+let score = 0;
+let level = 1;
+let lives = 5;
+let time = 60;
+let gems = 0;
+
+let starsInLevel = 0;
+let missedStars = 0;
+let comboCount = 0;
+
+let running = false;
+let paused = false;
+
+let timer = null;
+let spawner = null;
+
+let soundOn = true;
+let musicPlaying = false;
+
+let playerName = "";
+let playerGender = "male";
+let playerAvatar = "👦";
+
+let audio = null;
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const game = document.getElementById("game");
+const player = document.getElementById("player");
+
+const scoreEl = document.getElementById("score");
+const levelEl = document.getElementById("level");
+const timeEl = document.getElementById("time");
+const livesEl = document.getElementById("lives");
+const gemsEl = document.getElementById("gems");
+const comboEl = document.getElementById("combo");
+
+const startScreen = document.getElementById("startScreen");
+const pauseScreen = document.getElementById("pauseScreen");
+const gameOver = document.getElementById("gameOver");
+const leaderboard = document.getElementById("leaderboard");
+const settingsScreen = document.getElementById("settingsScreen");
+
+const nameInput = document.getElementById("nameInput");
+
+const maleBtn = document.getElementById("maleBtn");
+const femaleBtn = document.getElementById("femaleBtn");
+const avatarPreview = document.getElementById("avatarPreview");
+
+const soundBtn = document.getElementById("soundBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+
+/* =========================
+   SAFE TEXT
+========================= */
+
+function safeText(value){
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+/* =========================
+   UPDATE HUD
+========================= */
+
+function update(){
+
+  scoreEl.textContent = score;
+
+  levelEl.textContent = level;
+
+  timeEl.textContent = time;
+
+  gemsEl.textContent = "💎 " + gems;
+
+  comboEl.textContent = "x" + comboCount;
+
+  livesEl.textContent =
+    "❤️".repeat(Math.max(0,lives)) +
+    "🖤".repeat(Math.max(0,5-lives));
 
 }
 
+/* =========================
+   SOUND
+========================= */
 
-/* CLOSE */
+function initAudio(){
 
-document.getElementById(
- 'closeLeaderboard'
-).onclick=()=>{
+  if(!audio){
+    audio = new (window.AudioContext ||
+      window.webkitAudioContext)();
+  }
 
- leaderboard.style.display='none';
+  if(audio.state === "suspended"){
+    audio.resume();
+  }
+}
 
-};
+function beep(freq=600,duration=.08,type="sine"){
 
+  if(!soundOn) return;
 
-/* LEVEL UP */
+  initAudio();
+
+  const osc = audio.createOscillator();
+  const gain = audio.createGain();
+
+  osc.type = type;
+  osc.frequency.value = freq;
+
+  gain.gain.setValueAtTime(.06,audio.currentTime);
+  gain.gain.exponentialRampToValueAtTime(
+    .001,
+    audio.currentTime + duration
+  );
+
+  osc.connect(gain);
+  gain.connect(audio.destination);
+
+  osc.start();
+  osc.stop(audio.currentTime + duration);
+}
+
+function startMusic(){
+
+  if(!soundOn || musicPlaying) return;
+
+  musicPlaying = true;
+
+  const notes = [220,277,330,277];
+  let i = 0;
+
+  function musicLoop(){
+
+    if(!musicPlaying || !running || paused) return;
+
+    beep(notes[i % notes.length],.08,"triangle");
+
+    i++;
+
+    setTimeout(musicLoop,500);
+  }
+
+  musicLoop();
+}
+
+/* =========================
+   FLOAT TEXT
+========================= */
+
+function floatText(x,y,text,color="#fff"){
+
+  const el = document.createElement("div");
+
+  el.className = "floatText";
+
+  el.textContent = text;
+
+  el.style.left = x + "px";
+  el.style.top = y + "px";
+  el.style.color = color;
+
+  game.appendChild(el);
+
+  setTimeout(()=>{
+    el.remove();
+  },800);
+}
+
+/* =========================
+   HIT EFFECT
+========================= */
+
+function createHitEffect(x,y,type){
+
+  const ring = document.createElement("div");
+
+  ring.className = "hitRing";
+
+  ring.style.left = x + "px";
+  ring.style.top = y + "px";
+
+  if(type === "diamond"){
+    ring.style.borderColor = "#67eaff";
+  }else{
+    ring.style.borderColor = "#ffe96b";
+  }
+
+  game.appendChild(ring);
+
+  setTimeout(()=>{
+    ring.remove();
+  },500);
+
+  for(let i=0;i<10;i++){
+
+    const spark = document.createElement("div");
+
+    spark.className = "hitSpark";
+
+    spark.style.left = x + "px";
+    spark.style.top = y + "px";
+
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 25 + Math.random() * 45;
+
+    spark.style.setProperty(
+      "--x",
+      Math.cos(angle) * distance + "px"
+    );
+
+    spark.style.setProperty(
+      "--y",
+      Math.sin(angle) * distance + "px"
+    );
+
+    game.appendChild(spark);
+
+    setTimeout(()=>{
+      spark.remove();
+    },550);
+  }
+}
+
+/* =========================
+   LEVEL UP
+========================= */
 
 function levelUp(){
 
- level++;
+  level++;
 
- starsInLevel=0;
+  starsInLevel = 0;
 
- score+=level*5;
+  score += level * 5;
 
- beep(880,.12,'triangle');
-
- setTimeout(
-  ()=>beep(1175,.18,'triangle'),
-  100
- );
-
- combo.textContent=
-  '🚀 LEVEL '+level+'!';
-
- combo.className='combo show';
-
- setTimeout(
-  ()=>combo.className='combo',
-  750
- );
-
- say(
-  'LEVEL UP! 🚀 Bonus +'+
-  (level*5)+' score'
- );
-
- update();
-
-}
-
-
-/* CATCH */
-
-function catchItem(el,type){
-
- if(!running)return;
-
- let r=el.getBoundingClientRect();
- let g=game.getBoundingClientRect();
-
- let x=r.left-g.left+20;
- let y=r.top-g.top;
-
- el.remove();
-
- if(type==='star'){
-
-  score++;
-  starsInLevel++;
-  comboCount++;
-
-  beep(
-   620+
-   Math.min(comboCount,8)*55
-  );
+  beep(650,.12);
+  setTimeout(()=>beep(850,.12),100);
+  setTimeout(()=>beep(1050,.16),200);
 
   floatText(
-   x,y,
-   '+1 ⭐',
-   '#ffe66d'
+    window.innerWidth/2,
+    180,
+    "🚀 LEVEL " + level + "!",
+    "#ffd95a"
   );
 
-  if(comboCount%5===0){
-
-   say(
-    '🔥 '+comboCount+
-    ' STAR COMBO!'
-   );
-
-  }
-
-  if(starsInLevel>=10){
-   levelUp();
-  }
-
- }else{
-
-  gems++;
-  score+=5;
-  comboCount+=2;
-
-  beep(
-   980,.13,'triangle'
+  showToast(
+    "Level " + level + " reached! +" +
+    (level*5) + " bonus"
   );
 
-  floatText(
-   x,y,
-   '+5 💎',
-   '#62efff'
-  );
-
-  if(gems%5===0){
-   say('💎 GEM STREAK!');
-  }
-
- }
-
- update();
-
+  update();
 }
 
+/* =========================
+   SPAWN
+========================= */
 
-/* SPAWN */
+function spawn(){
 
-function spawn(
- type=Math.random()<.82
- ?'star'
- :'diamond'
-){
+  if(!running || paused) return;
 
- if(!running)return;
+  const item = document.createElement("div");
 
- const d=
-  document.createElement('div');
+  const isDiamond = Math.random() < .14;
 
- d.className=
-  'item '+type;
+  const type = isDiamond ? "diamond" : "star";
 
- d.textContent=
-  type==='star'
-  ?'⭐'
-  :'💎';
+  item.className = "item " + type;
 
- const w=game.clientWidth;
- const h=game.clientHeight;
+  item.textContent = isDiamond ? "💎" : "⭐";
 
- d.style.left=
-  (8+
-  Math.random()*(w-60))+'px';
+  const maxX = Math.max(20,window.innerWidth - 70);
 
- d.style.top=
-  (45+
-  Math.random()*
-  Math.max(60,h-145))+'px';
+  const x = 20 + Math.random() * maxX;
 
- d.style.fontSize=
-  (
-   type==='star'
-   ?30+Math.random()*16
-   :28+Math.random()*14
-  )+'px';
+  item.style.left = x + "px";
+  item.style.top = "-70px";
 
- d.onclick=
-  ()=>catchItem(d,type);
+  game.appendChild(item);
 
- game.appendChild(d);
+  let y = -70;
 
- setTimeout(()=>{
+  const speed =
+    2.2 +
+    Math.random() * 1.7 +
+    (level - 1) * .25;
 
-  if(d.isConnected){
+  let lastTime = performance.now();
 
-   let missedX=
-    parseFloat(d.style.left);
+  function move(now){
 
-   let missedY=
-    parseFloat(d.style.top);
+    if(!item.isConnected) return;
 
-   d.remove();
-
-   if(type==='star'){
-
-    missedStars++;
-    comboCount=0;
-
-    floatText(
-     missedX,
-     missedY,
-     'MISS '+missedStars+'/5',
-     '#ff7a9b'
-    );
-
-    if(missedStars%5===0){
-
-     lives--;
-
-     beep(
-      180,.2,'sawtooth'
-     );
-
-     say(
-      '💔 5 stars missed — 1 LIFE lost!'
-     );
-
+    if(!running){
+      item.remove();
+      return;
     }
+
+    if(paused){
+
+      lastTime = now;
+
+      requestAnimationFrame(move);
+
+      return;
+    }
+
+    const delta = Math.min(40,now-lastTime);
+
+    lastTime = now;
+
+    y += speed * delta / 16.67;
+
+    item.style.top = y + "px";
+
+    const playerRect =
+      player.getBoundingClientRect();
+
+    const itemRect =
+      item.getBoundingClientRect();
+
+    const hit =
+      itemRect.bottom > playerRect.top &&
+      itemRect.top < playerRect.bottom &&
+      itemRect.right > playerRect.left &&
+      itemRect.left < playerRect.right;
+
+    if(hit){
+
+      const hitX =
+        itemRect.left + itemRect.width/2;
+
+      const hitY =
+        itemRect.top + itemRect.height/2;
+
+      if(type === "star"){
+
+        score += 1;
+
+        starsInLevel++;
+
+        comboCount++;
+
+        beep(
+          500 + Math.min(comboCount,10)*25,
+          .07
+        );
+
+        floatText(
+          hitX,
+          hitY,
+          "+1 ⭐",
+          "#ffe96b"
+        );
+
+        if(comboCount >= 3){
+
+          floatText(
+            hitX,
+            hitY - 25,
+            "COMBO x" + comboCount,
+            "#ff72db"
+          );
+        }
+
+        createHitEffect(
+          hitX,
+          hitY,
+          "star"
+        );
+
+        item.classList.add("starHit");
+
+        if(starsInLevel >= 10){
+          levelUp();
+        }
+
+      }else{
+
+        gems += 5;
+
+        score += 5;
+
+        comboCount += 2;
+
+        beep(900,.08);
+        setTimeout(()=>beep(1200,.1),70);
+
+        floatText(
+          hitX,
+          hitY,
+          "+5 💎",
+          "#67eaff"
+        );
+
+        createHitEffect(
+          hitX,
+          hitY,
+          "diamond"
+        );
+
+        item.classList.add("diamondHit");
+
+        const popup =
+          document.createElement("div");
+
+        popup.className = "gemPopup";
+
+        popup.textContent = "💎 +5";
+
+        game.appendChild(popup);
+
+        setTimeout(()=>{
+          popup.remove();
+        },1000);
+      }
+
+      update();
+
+      setTimeout(()=>{
+        item.remove();
+      },430);
+
+      return;
+    }
+
+    if(y > window.innerHeight + 80){
+
+      item.remove();
+
+      if(type === "star"){
+
+        missedStars++;
+
+        comboCount = 0;
+
+        floatText(
+          x,
+          window.innerHeight - 130,
+          "MISS " + missedStars + "/5",
+          "#ff7a9b"
+        );
+
+        if(missedStars >= 5){
+
+          missedStars = 0;
+
+          lives--;
+
+          beep(180,.16,"sawtooth");
+
+          update();
+
+          showToast("❤️ Life lost!");
+
+          if(lives <= 0){
+
+            endGame("OUT OF LIVES 💔");
+
+            return;
+          }
+        }
+
+        update();
+      }
+
+      return;
+    }
+
+    requestAnimationFrame(move);
+  }
+
+  requestAnimationFrame(move);
+}
+
+/* =========================
+   GAME TIMER
+========================= */
+
+function startTimer(){
+
+  clearInterval(timer);
+
+  timer = setInterval(()=>{
+
+    if(!running || paused) return;
+
+    time--;
 
     update();
 
-    if(lives<=0){
+    if(time <= 0){
 
-     end('OUT OF LIVES 💔');
-
+      endGame("TIME'S UP ⏰");
     }
 
-   }
+  },1000);
+}
 
-  }
+/* =========================
+   SPAWNER
+========================= */
 
- },
- Math.max(
-  900,
-  2300-level*120
- ));
+function startSpawner(){
+
+  clearInterval(spawner);
+
+  spawner = setInterval(()=>{
+
+    if(running && !paused){
+      spawn();
+
+      if(level >= 4){
+        spawn();
+      }
+    }
+
+  },850);
 
 }
 
-
-/* SCHEDULE */
-
-function schedule(){
-
- clearInterval(spawner);
-
- spawner=setInterval(
-  ()=>spawn(),
-  Math.max(
-   450,
-   1050-level*65
-  )
- );
-
-}
-
-
-/* START GAME */
+/* =========================
+   START GAME
+========================= */
 
 function startGame(){
 
- playerName=
-  nameInput.value.trim();
+  const name =
+    nameInput.value.trim();
 
- if(!playerName){
+  if(!name){
 
-  nameInput.focus();
+    showToast("Please enter your name");
 
-  say('✏️ Please enter your name!');
+    nameInput.focus();
 
-  return;
+    return;
+  }
 
- }
+  initAudio();
 
- score=0;
- level=1;
- lives=5;
- time=60;
- gems=0;
- starsInLevel=0;
- comboCount=0;
- missedStars=0;
+  playerName = name;
 
- running=true;
+  score = 0;
+  level = 1;
+  lives = 5;
+  time = 60;
+  gems = 0;
 
- overlay.style.display='none';
+  starsInLevel = 0;
+  missedStars = 0;
+  comboCount = 0;
 
- game
-  .querySelectorAll('.item')
-  .forEach(x=>x.remove());
+  running = true;
+  paused = false;
 
- update();
+  startScreen.style.display = "none";
+  gameOver.style.display = "none";
+  leaderboard.style.display = "none";
+  settingsScreen.style.display = "none";
+  pauseScreen.style.display = "none";
 
- schedule();
-
- startMusic();
-
- clearInterval(timer);
-
- timer=setInterval(()=>{
-
-  time--;
+  pauseBtn.textContent = "⏸️ Pause";
 
   update();
 
-  if(time<=0){
+  clearAllItems();
 
-   end('TIME UP ⏱️');
+  startTimer();
 
+  startSpawner();
+
+  musicPlaying = false;
+
+  startMusic();
+
+}
+
+/* =========================
+   END GAME
+========================= */
+
+function endGame(reason){
+
+  running = false;
+
+  paused = false;
+
+  clearInterval(timer);
+  clearInterval(spawner);
+
+  musicPlaying = false;
+
+  pauseScreen.style.display = "none";
+
+  document.getElementById(
+    "gameOverReason"
+  ).textContent = reason;
+
+  document.getElementById(
+    "finalScore"
+  ).textContent = score;
+
+  document.getElementById(
+    "finalGems"
+  ).textContent = "💎 " + gems;
+
+  document.getElementById(
+    "gameOverAvatar"
+  ).textContent = playerAvatar;
+
+  saveScore();
+
+  gameOver.style.display = "grid";
+
+}
+
+/* =========================
+   CLEAR ITEMS
+========================= */
+
+function clearAllItems(){
+
+  document
+    .querySelectorAll(".item")
+    .forEach(el=>el.remove());
+
+}
+
+/* =========================
+   PAUSE
+========================= */
+
+function pauseGame(){
+
+  if(!running) return;
+
+  paused = true;
+
+  pauseScreen.style.display = "grid";
+
+  pauseBtn.textContent = "▶️ Resume";
+
+  musicPlaying = false;
+}
+
+function resumeGame(){
+
+  if(!running) return;
+
+  paused = false;
+
+  pauseScreen.style.display = "none";
+
+  pauseBtn.textContent = "⏸️ Pause";
+
+  musicPlaying = false;
+
+  startMusic();
+}
+
+/* =========================
+   SETTINGS
+========================= */
+
+function openSettings(){
+
+  settingsScreen.style.display = "grid";
+
+  updateSettingsUI();
+
+}
+
+function closeSettings(){
+
+  settingsScreen.style.display = "none";
+
+}
+
+function updateSettingsUI(){
+
+  document.getElementById(
+    "settingSoundBtn"
+  ).textContent = soundOn ? "ON" : "OFF";
+
+  soundBtn.textContent =
+    soundOn ? "🔊 Sound" : "🔇 Sound";
+}
+
+function toggleSound(){
+
+  soundOn = !soundOn;
+
+  if(soundOn){
+
+    initAudio();
+
+    beep(700,.08);
+
+  }else{
+
+    musicPlaying = false;
   }
 
- },1000);
-
- say(
-  'Good luck, '+playerName+'! 🚀'
- );
+  updateSettingsUI();
 
 }
 
+/* =========================
+   LEADERBOARD
+========================= */
 
-/* END GAME */
+function getLeaderboard(){
 
-function end(title){
+  try{
 
- if(!running)return;
+    return JSON.parse(
+      localStorage.getItem(
+        "cosmicLeaderboard"
+      ) || "[]"
+    );
 
- running=false;
+  }catch{
 
- clearInterval(timer);
- clearInterval(spawner);
+    return [];
+  }
+}
 
- game
-  .querySelectorAll('.item')
-  .forEach(x=>x.remove());
+function saveScore(){
 
- saveScore();
+  if(!playerName) return;
 
- overlay.innerHTML=`
+  const board = getLeaderboard();
 
- <div class="modal">
+  board.push({
+    name:playerName,
+    score:score,
+    gems:gems,
+    level:level,
+    avatar:playerAvatar
+  });
 
-  <div class="big">
-   ${title.startsWith('TIME')?'⏱️':'🏆'}
-  </div>
+  board.sort(
+    (a,b)=>b.score-a.score
+  );
 
-  <h1>${title}</h1>
+  localStorage.setItem(
+    "cosmicLeaderboard",
+    JSON.stringify(board.slice(0,10))
+  );
+}
 
-  <p>
-   ${playerAvatar} <b>${playerName}</b><br><br>
+function showLeaderboard(){
 
-   Score <b>${score}</b>
-   &nbsp; • &nbsp;
-   Level <b>${level}</b>
-   &nbsp; • &nbsp;
-   Diamonds <b>${gems}</b>
-  </p>
+  const board = getLeaderboard();
 
-  <button id="again">
-   🚀 PLAY AGAIN
-  </button>
+  const list =
+    document.getElementById(
+      "leaderboardList"
+    );
 
-  <br><br>
+  if(board.length === 0){
 
-  <button id="gameOverLeaderboard">
-   🏆 LEADERBOARD
-  </button>
+    list.innerHTML =
+      '<p class="info">No scores yet. Be the first! 🚀</p>';
 
- </div>
- `;
+  }else{
 
- overlay.style.display='grid';
+    list.innerHTML =
+      board.map((entry,index)=>`
 
- document.getElementById(
-  'again'
- ).onclick=startGame;
+        <div class="leaderRow">
 
- document.getElementById(
-  'gameOverLeaderboard'
- ).onclick=showLeaderboard;
+          <div class="rank">
+            #${index+1}
+          </div>
+
+          <div class="nameCell">
+            ${entry.avatar || "👤"}
+            ${safeText(entry.name)}
+          </div>
+
+          <div class="scoreCell">
+            ${entry.score}
+          </div>
+
+        </div>
+
+      `).join("");
+  }
+
+  leaderboard.style.display = "grid";
+}
+
+/* =========================
+   INVITE FRIEND
+========================= */
+
+function getInviteLink(){
+
+  const base =
+    window.location.href.split("?")[0];
+
+  return base + "?invite=cosmic";
 
 }
 
+async function inviteFriend(){
 
-/* BUTTONS */
+  const link = getInviteLink();
 
-document.getElementById(
- 'play'
-).onclick=startGame;
+  const shareText =
+    "🚀 Come play Catch The Stars with me! ⭐💎\n" +
+    "Catch stars, collect diamonds and beat my score!\n\n" +
+    link;
 
-document.getElementById(
- 'restart'
-).onclick=startGame;
+  /*
+    Local one-time reward.
+    Real friend verification requires
+    a backend/database.
+  */
 
-document.getElementById(
- 'leaderboardBtn'
-).onclick=showLeaderboard;
+  const rewardKey =
+    "cosmicInviteRewardClaimed";
 
-document.getElementById(
- 'startLeaderboard'
-).onclick=showLeaderboard;
+  let rewarded =
+    localStorage.getItem(rewardKey) === "yes";
 
+  if(!rewarded){
 
-/* SOUND */
+    gems += 5;
 
-document.getElementById(
- 'sound'
-).onclick=()=>{
+    localStorage.setItem(
+      rewardKey,
+      "yes"
+    );
 
- soundOn=!soundOn;
+    update();
 
- document.getElementById(
-  'sound'
- ).textContent=
-  soundOn?'🔊':'🔇';
+    showToast("🎉 Invite reward +5 💎");
 
- if(soundOn){
-  startMusic();
- }else{
-  musicPlaying=false;
- }
+    beep(900,.08);
 
-};
+    setTimeout(()=>{
+      beep(1200,.12);
+    },100);
 
+  }else{
 
-/* MOUSE */
+    showToast(
+      "Invite reward already claimed 💎"
+    );
+  }
+
+  try{
+
+    if(navigator.share){
+
+      await navigator.share({
+        title:"Catch The Stars",
+        text:shareText,
+        url:link
+      });
+
+      return;
+    }
+
+    await navigator.clipboard.writeText(
+      shareText
+    );
+
+    showToast(
+      "🔗 Invite link copied!"
+    );
+
+  }catch(error){
+
+    try{
+
+      await navigator.clipboard.writeText(
+        link
+      );
+
+      showToast(
+        "🔗 Invite link copied!"
+      );
+
+    }catch{
+
+      prompt(
+        "Copy your invite link:",
+        link
+      );
+    }
+  }
+}
+
+/* =========================
+   TOAST
+========================= */
+
+let toastTimer = null;
+
+function showToast(message){
+
+  const toast =
+    document.getElementById("toast");
+
+  toast.textContent = message;
+
+  toast.style.display = "block";
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(()=>{
+    toast.style.display = "none";
+  },2200);
+}
+
+/* =========================
+   PLAYER MOVEMENT
+========================= */
+
+function movePlayer(x){
+
+  const half = 34;
+
+  const clamped =
+    Math.max(
+      half,
+      Math.min(
+        window.innerWidth-half,
+        x
+      )
+    );
+
+  player.style.left =
+    clamped + "px";
+}
 
 game.addEventListener(
- 'pointermove',
- e=>{
-
-  if(!running)return;
-
-  let r=
-   game.getBoundingClientRect();
-
-  let x=
-   Math.max(
-    40,
-    Math.min(
-     r.width-40,
-     e.clientX-r.left
-    )
-   );
-
-  player.style.left=x+'px';
-
- }
+  "pointermove",
+  e=>{
+    if(running && !paused){
+      movePlayer(e.clientX);
+    }
+  }
 );
 
+window.addEventListener(
+  "keydown",
+  e=>{
 
-/* KEYBOARD */
+    if(e.key === "ArrowLeft"){
 
-document.addEventListener(
- 'keydown',
- e=>{
+      const rect =
+        player.getBoundingClientRect();
 
-  if(
-   e.code==='Space' &&
-   !running
-  ){
-   startGame();
+      movePlayer(
+        rect.left - 30
+      );
+    }
+
+    if(e.key === "ArrowRight"){
+
+      const rect =
+        player.getBoundingClientRect();
+
+      movePlayer(
+        rect.right + 30
+      );
+    }
+
+    if(e.code === "Space"){
+
+      e.preventDefault();
+
+      if(!running){
+        startGame();
+      }
+    }
+
+    if(e.key === "Escape"){
+
+      if(running){
+
+        if(paused){
+          resumeGame();
+        }else{
+          pauseGame();
+        }
+
+      }
+    }
+  }
+);
+
+/* =========================
+   GENDER
+========================= */
+
+function selectGender(gender){
+
+  playerGender = gender;
+
+  if(gender === "male"){
+
+    playerAvatar = "👦";
+
+    maleBtn.classList.add("active");
+    femaleBtn.classList.remove("active");
+
+  }else{
+
+    playerAvatar = "👧";
+
+    femaleBtn.classList.add("active");
+    maleBtn.classList.remove("active");
   }
 
- }
+  avatarPreview.textContent =
+    playerAvatar;
+}
+
+/* =========================
+   BUTTON EVENTS
+========================= */
+
+document
+  .getElementById("startBtn")
+  .onclick = startGame;
+
+document
+  .getElementById("playAgainBtn")
+  .onclick = ()=>{
+    gameOver.style.display = "none";
+    startGame();
+  };
+
+document
+  .getElementById("maleBtn")
+  .onclick = ()=>{
+    selectGender("male");
+  };
+
+document
+  .getElementById("femaleBtn")
+  .onclick = ()=>{
+    selectGender("female");
+  };
+
+soundBtn.onclick =
+  toggleSound;
+
+document
+  .getElementById("pauseBtn")
+  .onclick = ()=>{
+
+    if(!running) return;
+
+    if(paused){
+      resumeGame();
+    }else{
+      pauseGame();
+    }
+  };
+
+document
+  .getElementById("resumeBtn")
+  .onclick =
+  resumeGame;
+
+document
+  .getElementById("pauseSettingsBtn")
+  .onclick = ()=>{
+    pauseScreen.style.display = "none";
+    openSettings();
+  };
+
+document
+  .getElementById("pauseLeaderboardBtn")
+  .onclick = ()=>{
+    pauseScreen.style.display = "none";
+    showLeaderboard();
+  };
+
+document
+  .getElementById("leaderBtn")
+  .onclick =
+  showLeaderboard;
+
+document
+  .getElementById("startLeaderboardBtn")
+  .onclick =
+  showLeaderboard;
+
+document
+  .getElementById("gameOverLeaderboardBtn")
+  .onclick = ()=>{
+    gameOver.style.display = "none";
+    showLeaderboard();
+  };
+
+document
+  .getElementById("closeLeaderboard")
+  .onclick = ()=>{
+    leaderboard.style.display = "none";
+  };
+
+document
+  .getElementById("settingsBtn")
+  .onclick =
+  openSettings;
+
+document
+  .getElementById("closeSettings")
+  .onclick =
+  closeSettings;
+
+document
+  .getElementById("settingSoundBtn")
+  .onclick =
+  toggleSound;
+
+document
+  .getElementById("settingPauseBtn")
+  .onclick = ()=>{
+
+    closeSettings();
+
+    if(running){
+      pauseGame();
+    }
+  };
+
+document
+  .getElementById("settingLeaderboardBtn")
+  .onclick = ()=>{
+
+    closeSettings();
+
+    showLeaderboard();
+  };
+
+document
+  .getElementById("inviteBtn")
+  .onclick =
+  inviteFriend;
+
+document
+  .getElementById("settingInviteBtn")
+  .onclick =
+  inviteFriend;
+
+document
+  .getElementById("restartBtn")
+  .onclick = ()=>{
+
+    if(running){
+
+      if(confirm(
+        "Restart the current game?"
+      )){
+        startGame();
+      }
+
+    }else{
+
+      startGame();
+    }
+  };
+
+/* =========================
+   LOAD SAVED NAME
+========================= */
+
+const savedName =
+  localStorage.getItem(
+    "cosmicPlayerName"
+  );
+
+if(savedName){
+
+  nameInput.value =
+    savedName;
+}
+
+nameInput.addEventListener(
+  "change",
+  ()=>{
+    localStorage.setItem(
+      "cosmicPlayerName",
+      nameInput.value.trim()
+    );
+  }
 );
 
+/* =========================
+   INITIAL
+========================= */
 
 update();
 
+updateSettingsUI();
+
+selectGender("male");
 </script>
 
 </body>
 </html>
-```
