@@ -2,93 +2,76 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catch the Stars</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Catch the Stars ⭐</title>
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0; min-height:100vh; display:flex; justify-content:center; align-items:center;
-  font-family:Arial,sans-serif; background:linear-gradient(135deg,#111827,#312e81);
-  color:white; overflow:hidden;
-}
-.game{
-  width:min(92vw,500px); padding:20px; border-radius:24px;
-  background:rgba(255,255,255,.1); backdrop-filter:blur(12px);
-  box-shadow:0 20px 60px rgba(0,0,0,.35); text-align:center;
-}
-h1{margin:0 0 8px;font-size:32px}
-.info{display:flex;justify-content:space-between;margin:10px 4px 14px;font-weight:bold}
-#board{
-  position:relative; height:480px; overflow:hidden; border-radius:18px;
-  background:radial-gradient(circle at 30% 20%,#4338ca,#0f172a 65%);
-  border:2px solid rgba(255,255,255,.2); touch-action:none;
-}
-.star{
-  position:absolute; width:48px;height:48px; display:grid;place-items:center;
-  font-size:34px; cursor:pointer; user-select:none;
-  animation:pop .12s ease-out;
-}
-@keyframes pop{from{transform:scale(.3)}to{transform:scale(1)}}
-button{
-  margin-top:14px; border:0; padding:12px 22px; border-radius:12px;
-  background:#fbbf24; color:#111827; font-weight:bold; cursor:pointer;
-}
-small{display:block;margin-top:10px;opacity:.8}
+body{margin:0;background:#17133b;color:#fff;font-family:Arial;text-align:center}
+h1{margin:18px 0 8px}
+#score,#time{font-size:20px;margin:6px}
+#game{position:relative;margin:15px auto;width:min(90vw,700px);height:60vh;min-height:350px;max-height:550px;border:3px solid white;border-radius:18px;overflow:hidden;background:radial-gradient(circle,#37306f,#100d27)}
+#star{position:absolute;font-size:52px;display:none}
+#message{margin:10px;font-size:18px}
+button{padding:13px 25px;border:0;border-radius:10px;font-size:18px;font-weight:bold}
 </style>
 </head>
 <body>
-<div class="game">
-  <h1>⭐ Catch the Stars</h1>
-  <div class="info"><span>Score: <b id="score">0</b></span><span>Time: <b id="time">30</b>s</span></div>
-  <div id="board"></div>
-  <button id="start">Start Game</button>
-  <small>Tap/click the ⭐ as fast as you can!</small>
-</div>
+<h1>⭐ Catch the Stars</h1>
+<div id="score">Score: 0</div>
+<div id="time">Time: 30</div>
+<div id="game"><div id="star">⭐</div></div>
+<div id="message">Press <b>START</b>, then press <b>SPACE</b> whenever you see the ⭐!</div>
+<button id="start">START GAME</button>
 
 <script>
-const board=document.getElementById("board");
-const scoreEl=document.getElementById("score");
-const timeEl=document.getElementById("time");
-const startBtn=document.getElementById("start");
-let score=0,time=30,timer=null,playing=false,starTimer=null;
+const game=document.getElementById("game");
+const star=document.getElementById("star");
+const scoreBox=document.getElementById("score");
+const timeBox=document.getElementById("time");
+const message=document.getElementById("message");
+const start=document.getElementById("start");
 
-function placeStar(){
-  if(!playing)return;
-  board.querySelectorAll(".star").forEach(s=>s.remove());
-  const star=document.createElement("div");
-  star.className="star";
-  star.textContent="⭐";
-  const maxX=board.clientWidth-48, maxY=board.clientHeight-48;
-  star.style.left=Math.random()*maxX+"px";
-  star.style.top=Math.random()*maxY+"px";
-  star.onclick=()=>{
-    if(!playing)return;
-    score++;
-    scoreEl.textContent=score;
-    placeStar();
-  };
-  board.appendChild(star);
+let score=0,time=30,running=false,timer;
+
+function moveStar(){
+  const x=Math.random()*(game.clientWidth-70)+10;
+  const y=Math.random()*(game.clientHeight-80)+10;
+  star.style.left=x+"px";
+  star.style.top=y+"px";
 }
-function endGame(){
-  playing=false;
-  clearInterval(timer); clearInterval(starTimer);
-  board.querySelectorAll(".star").forEach(s=>s.remove());
-  startBtn.textContent="Play Again";
-  setTimeout(()=>alert("🎉 Game Over! Your score: "+score),50);
-}
+
 function startGame(){
-  clearInterval(timer); clearInterval(starTimer);
-  score=0; time=30; playing=true;
-  scoreEl.textContent=score; timeEl.textContent=time;
-  startBtn.textContent="Restart";
-  placeStar();
+  score=0;time=30;running=true;
+  scoreBox.textContent="Score: 0";
+  timeBox.textContent="Time: 30";
+  message.innerHTML="Press <b>SPACE</b> when you see the ⭐!";
+  start.textContent="RESTART";
+  star.style.display="block";
+  moveStar();
+  clearInterval(timer);
   timer=setInterval(()=>{
-    time--; timeEl.textContent=time;
-    if(time<=0) endGame();
+    time--;
+    timeBox.textContent="Time: "+time;
+    if(time<=0){
+      clearInterval(timer);
+      running=false;
+      star.style.display="none";
+      message.innerHTML="Game Over! ⭐ Your score: <b>"+score+"</b>";
+      start.textContent="PLAY AGAIN";
+    }
   },1000);
-  starTimer=setInterval(placeStar,1200);
 }
-startBtn.onclick=startGame;
+
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space"){
+    e.preventDefault();
+    if(!running)return;
+    score++;
+    scoreBox.textContent="Score: "+score;
+    moveStar();
+  }
+});
+
+start.onclick=startGame;
 </script>
 </body>
 </html>
